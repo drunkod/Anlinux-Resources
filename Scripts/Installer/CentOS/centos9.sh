@@ -103,4 +103,7 @@ echo "making $bin executable"
 chmod +x $bin
 echo "removing image for some space"
 rm $tarball
+##add dev repo to dir centos-fs/etc/yum.repos.d
+wget "https://raw.githubusercontent.com/drunkod/AnLinux-Resources/master/Scripts/Installer/CentOS/development9.repo" -P centos-fs/etc/yum.repos.d
+
 echo "You can now launch CentOS with the ./${bin} script"
