@@ -4,7 +4,7 @@ if [ -d "$folder" ]; then
 	first=1
 	echo "skipping downloading"
 fi
-tarball="backup.tar.gz"
+tarball="alpine-rootfs.tar.gz"
 if [ "$first" != 1 ];then
 	if [ ! -f $tarball ]; then
 		echo "Download Rootfs, this may take a while base on your internet speed."
@@ -23,8 +23,8 @@ if [ "$first" != 1 ];then
 			archurl="i386" ;;
 		*)
 			echo "unknown architecture"; exit 1 ;;
-		esac
-		wget "https://raw.githubusercontent.com/drunkod/AnLinux-Resources/master/Rootfs/Alpine/${archurl}/alpine-minirootfs-3.17.0-${archurl}.tar.gz" -O $tarball
+		esac 
+		wget "https://gitlab.com/drunkoda/Anlinux-Resources/-/raw/main/Rootfs/Alpine/${archurl}/alpine-minirootfs-gitcode-${archurl}.tar.gz" -O $tarball
 	fi
 	cur=`pwd`
 	mkdir -p "$folder"
