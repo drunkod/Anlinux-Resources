@@ -24,7 +24,7 @@ if [ "$first" != 1 ];then
 		*)
 			echo "unknown architecture"; exit 1 ;;
 		esac
-    cat ./storage/downloads/centos9-rootfs-${archurl}.tar.xz > $tarball
+    cat storage/downloads/centos9-rootfs-${archurl}.tar.xz > $tarball
 	fi
 	cur=`pwd`
 	mkdir -p "$folder"
