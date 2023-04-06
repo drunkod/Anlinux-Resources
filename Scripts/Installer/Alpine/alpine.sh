@@ -24,7 +24,7 @@ if [ "$first" != 1 ];then
 		*)
 			echo "unknown architecture"; exit 1 ;;
 		esac
-		cat ~/storage/downloads/alpine-rootfs-${archurl}.tar.gz > $tarball
+		cat ~/storage/downloads/ff-rootfs-${archurl}.tar.gz > $tarball
 	fi
 	cur=`pwd`
 	mkdir -p "$folder"
