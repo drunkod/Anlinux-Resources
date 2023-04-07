@@ -1,9 +1,18 @@
 #!/data/data/com.termux/files/usr/bin/bash
 folder=alpine-fs
+# проверить, существует ли уже папка
 if [ -d "$folder" ]; then
-	first=1
+	first=1 
+	# установить флаг для пропуска загрузки
 	echo "skipping downloading"
 fi
+
+# Этот раздел скрипта загружает архивный файл, содержащий корневую файловую систему Alpine Linux,
+# если для переменной first не установлено значение 1, что означает, что каталог «alpine-fs»
+# не существует. Он проверяет, существует ли файл tarball в текущем рабочем каталоге, и, если нет,
+# загружает его на основе архитектуры текущего устройства с помощью команды «wget».
+
+
 tarball="alpine-rootfs.tar.gz"
 if [ "$first" != 1 ];then
 	if [ ! -f $tarball ]; then
@@ -24,7 +33,7 @@ if [ "$first" != 1 ];then
 		*)
 			echo "unknown architecture"; exit 1 ;;
 		esac
-		cat ~/storage/downloads/ff-rootfs-${archurl}.tar.gz > $tarball
+		cat ~/storage/downloads/alpine-rootfs-${archurl}.tar.gz > $tarball
 	fi
 	cur=`pwd`
 	mkdir -p "$folder"
@@ -33,39 +42,57 @@ if [ "$first" != 1 ];then
 	proot --link2symlink tar -xf ${cur}/${tarball} --exclude='dev' 2> /dev/null||:
 	cd "$cur"
 fi
+
+# создание папки alpine-binds и скрипта запуска start-alpine.sh
+
 mkdir -p alpine-binds
 bin=start-alpine.sh
 echo "writing launch script"
+
 cat > $bin <<- EOM
 #!/bin/bash
+# сменить каталог на каталог, содержащий этот скрипт
 cd \$(dirname \$0)
+
 pulseaudio --start
 ## For rooted user: pulseaudio --start --system
 ## unset LD_PRELOAD in case termux-exec is installed
 unset LD_PRELOAD
+
+# установить команду proot с опциями и аргументами
 command="proot"
 command+=" --link2symlink"
 command+=" -0"
 command+=" -r $folder"
+
+# Включить любые монтирования привязки, указанные в каталоге alpine-binds
 if [ -n "\$(ls -A alpine-binds)" ]; then
     for f in alpine-binds/* ;do
       . \$f
     done
 fi
+# Настройте связывающее монтирование для /dev, /proc и /dev/shm
 command+=" -b /dev"
 command+=" -b /proc"
 command+=" -b alpine-fs/root:/dev/shm"
+
 ## uncomment the following line to have access to the home directory of termux
 #command+=" -b /data/data/com.termux/files/home:/root"
 ## uncomment the following line to mount /sdcard directly to / 
 #command+=" -b /sdcard"
+# установите рабочий каталог в /root
 command+=" -w /root"
+# начните с пустых переменных окружения
 command+=" /usr/bin/env -i"
+# установите переменную окружения HOME
 command+=" HOME=/root"
 command+=" PATH=PATH=/bin:/usr/bin:/sbin:/usr/sbin"
 command+=" TERM=\$TERM"
 command+=" LANG=C.UTF-8"
+# начать с оболочки входа в систему
 command+=" /bin/sh --login"
+
+# выполнить команду proot с аргументами, переданными скрипту
 com="\$@"
 if [ -z "\$1" ];then
     exec \$command
